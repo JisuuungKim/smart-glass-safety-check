@@ -4,3 +4,4 @@
 export { useOpenAITTS } from './useOpenAITTS';
 export { useChecklists, useTTS, useUpdateChecklistItem } from './useChecklist';
 export { useSTTMutation } from './useSTTMutation';
+export { useGenerateReport } from './useReport';

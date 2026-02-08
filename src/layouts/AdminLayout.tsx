@@ -1,10 +1,6 @@
-import { ReactNode } from 'react'
 import { LayoutDashboard, ClipboardCheck, Settings } from 'lucide-react'
-import { useLocation, Link } from 'react-router-dom'
-
-interface AdminLayoutProps {
-  children: ReactNode
-}
+import { useLocation, Link } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 
 interface SidebarItem {
   id: string
@@ -18,7 +14,7 @@ const sidebarItems: SidebarItem[] = [
     id: 'dashboard',
     label: '대시보드',
     icon: LayoutDashboard,
-    path: '/admin/dashboard'
+    path: '/admin'
   },
   {
     id: 'inspection',
@@ -34,7 +30,7 @@ const sidebarItems: SidebarItem[] = [
   }
 ]
 
-export default function AdminLayout({ children }: AdminLayoutProps) {
+export default function AdminLayout() {
   const location = useLocation()
 
   return (
@@ -45,10 +41,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         {/* Sidebar */}
         <div className="w-64 bg-zinc-800/50 backdrop-blur-sm border-r border-zinc-700/50">
           {/* Logo/Brand */}
-          <div className="h-16 flex items-center justify-center border-b border-zinc-700/50">
-            <h1 className="text-xl font-bold text-white">
-              Admin Dashboard
-            </h1>
+          <div className="h-16 flex items-center justify-center border-r border-zinc-700/50">
           </div>
 
           {/* Navigation */}
@@ -92,25 +85,18 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           {/* Top Header */}
           <header className="bg-zinc-800/30 backdrop-blur-sm border-b border-zinc-700/50 px-6 py-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-semibold text-white">
-                관리자 패널
+              <h2 className="text-lg font-semibold text-white">
+                Dashboard
               </h2>
               <div className="flex items-center space-x-4">
-                <div className="text-sm text-gray-300">
-                  {new Date().toLocaleDateString('ko-KR', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  })}
-                </div>
               </div>
             </div>
           </header>
 
           {/* Content */}
-          <main className="flex-1 overflow-y-auto bg-zinc-900/50 p-6">
+          <main className="flex-1 overflow-y-auto bg-zinc-900/50">
             <div className="max-w-6xl mx-auto">
-              {children}
+              <Outlet />
             </div>
           </main>
         </div>

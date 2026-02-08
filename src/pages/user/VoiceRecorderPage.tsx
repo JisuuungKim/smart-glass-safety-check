@@ -32,12 +32,9 @@ const VoiceRecorderPage: React.FC = () => {
   const { data: TTSData, isPending: ttsLoading } = useTTS(machine_id);
   const sttMutation = useSTTMutation();
   const updateMutation = useUpdateChecklistItem();
-  const { order_idx } = useMachineStore();
 
   const voices = TTSData?.voices || [];
   const isComplete = currentIndex >= voices.length;
-
-  console.log(order_idx);
 
   // TTS 데이터 로드 완료 시 첫 번째 음성 자동 재생
   useEffect(() => {
