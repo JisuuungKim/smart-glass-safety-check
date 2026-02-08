@@ -1,18 +1,20 @@
-import React, { useEffect } from 'react';
 import { Check } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useMachineStore } from '../../store/machineStore';
 
 export const InspectionCompletePage: React.FC = () => {
   const navigate = useNavigate();
+  const { addOrderIdx, isFinished, initOrderIdx } = useMachineStore();
 
-//   useEffect(() => {
-//     // 5초 후 홈페이지로 자동 이동
-//     const timer = setTimeout(() => {
-//       navigate('/user');
-//     }, 5000);
-
-//     return () => clearTimeout(timer);
-//   }, [navigate]);
+  const goNextStep = () => {
+    addOrderIdx();
+    if (!isFinished()) {
+      navigate('/user/equipment-scan');
+    } else {
+      initOrderIdx();
+      navigate('/user');
+    }
+  }
 
 
   return (
@@ -36,7 +38,7 @@ export const InspectionCompletePage: React.FC = () => {
         {/* Main Content */}
         <div className="flex-1 flex flex-col items-center justify-center px-4">
           {/* Check Animation - SmartGlassConnectPage와 동일한 애니메이션 */}
-          <div className="relative mb-16">
+          <div className="relative mb-16" onClick={goNextStep}>
             <style>{`
               @keyframes checkScale {
                 0% {

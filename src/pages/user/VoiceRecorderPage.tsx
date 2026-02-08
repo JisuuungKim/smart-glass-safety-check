@@ -4,6 +4,8 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ActivationMode } from '../../components/common';
 import { useOpenAITTS } from '@/hooks';
 import { useTTS, useSTTMutation } from '@/hooks';
+import { useMachineStore } from '@/store/machineStore';
+import { useUpdateChecklistItem } from '@/hooks';
 
 // interface ChecklistItem {
 //   index: number;
@@ -29,9 +31,13 @@ const VoiceRecorderPage: React.FC = () => {
   const { speak, isSpeaking } = useOpenAITTS();
   const { data: TTSData, isPending: ttsLoading } = useTTS(machine_id);
   const sttMutation = useSTTMutation();
+  const updateMutation = useUpdateChecklistItem();
+  const { order_idx } = useMachineStore();
 
   const voices = TTSData?.voices || [];
   const isComplete = currentIndex >= voices.length;
+
+  console.log(order_idx);
 
   // TTS 데이터 로드 완료 시 첫 번째 음성 자동 재생
   useEffect(() => {
@@ -116,10 +122,13 @@ const VoiceRecorderPage: React.FC = () => {
     // 오디오 Blob 생성
     const audioBlob = new Blob(chunks, { type: 'audio/mp3' });
     
-    // 파일 저장
-    saveAudioFile(audioBlob, `recording_${currentIndex + 1}_${new Date().toISOString()}.mp3`);
+    // 현재 인덱스를 저장 (race condition 방지)
+    const recordingIndex = currentIndex + 1;
     
-    console.log(`Recording completed for voice ${currentIndex + 1}`);
+    // 파일 저장
+    saveAudioFile(audioBlob, `recording_${recordingIndex}_${new Date().toISOString()}.mp3`, recordingIndex);
+    
+    console.log(`Recording completed for voice ${recordingIndex}`);
     
     // 다음 음성으로 이동
     const nextIndex = currentIndex + 1;
@@ -139,51 +148,37 @@ const VoiceRecorderPage: React.FC = () => {
   };
   
   // 파일 저장 함수
-  const saveAudioFile = async (audioBlob: Blob, filename: string) => {
+  const saveAudioFile = async (audioBlob: Blob, filename: string, index: number) => {
     // 로컬 다운로드
-    const url = URL.createObjectURL(audioBlob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    // const url = URL.createObjectURL(audioBlob);
+    // const a = document.createElement('a');
+    // a.href = url;
+    // a.download = filename;
+    // document.body.appendChild(a);
+    // a.click();
+    // document.body.removeChild(a);
+    // URL.revokeObjectURL(url);
     
     // 서버 업로드
     try {
       const audioFile = new File([audioBlob], filename, { type: 'audio/mp3' });
       await sttMutation.mutateAsync({
         machine_id,
-        index: currentIndex + 1,
+        index: index,
         audio_file: audioFile
       });
       console.log('서버 업로드 성공');
+      updateMutation.mutate({
+        machine_id,
+        item_index: index,
+        done: true
+      });
+      console.log('체크리스트 상태 업데이트 성공');
     } catch (error) {
       console.error('서버 업로드 실패:', error);
     }
   };
   
-  // 서버 업로드 함수 (선택사항)
-  // const uploadAudioToServer = async (audioBlob: Blob, filename: string) => {
-  //   try {
-  //     const formData = new FormData();
-  //     formData.append('audio', audioBlob, filename);
-  //     formData.append('machine_id', '1');
-  //     formData.append('index', (currentIndex + 1).toString());
-  //     
-  //     const response = await fetch('/api/upload-audio', {
-  //       method: 'POST',
-  //       body: formData,
-  //     });
-  //     
-  //     if (response.ok) {
-  //       console.log('서버 업로드 성공');
-  //     }
-  //   } catch (error) {
-  //     console.error('서버 업로드 실패:', error);
-  //   }
-  // };
 
   const handleAudioStart = async () => {
     if (!isSpeaking) {

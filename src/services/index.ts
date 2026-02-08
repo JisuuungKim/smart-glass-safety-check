@@ -1,2 +1,2 @@
-export { fetchChecklist, fetchTTS } from './checklistService';
+export { fetchChecklist, fetchTTS, updateChecklistItem } from './checklistService';
 export { uploadSTT } from './sttService';

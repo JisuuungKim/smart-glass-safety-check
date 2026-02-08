@@ -19,3 +19,24 @@ export const fetchTTS = async (machine_id: string) => {
   });
   return response.data;
 };
+
+/**
+ * 체크리스트 아이템 상태 업데이트 함수
+ */
+export const updateChecklistItem = async ({
+  machine_id,
+  item_index,
+  done
+}: {
+  machine_id: string;
+  item_index: number;
+  done: boolean;
+}) => {
+  const response = await api.put('/api/checklists/machine/item', 
+    { done },
+    {
+      params: { machine_id, item_index }
+    }
+  );
+  return response.data;
+};

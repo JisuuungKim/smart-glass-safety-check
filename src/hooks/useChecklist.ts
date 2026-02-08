@@ -1,5 +1,5 @@
-import { useQuery } from '@tanstack/react-query';
-import { fetchChecklist, fetchTTS } from '../services';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { fetchChecklist, fetchTTS, updateChecklistItem } from '../services';
 
 export const useChecklists = (machine_id?: string) => {
   return useQuery({
@@ -14,5 +14,16 @@ export const useTTS = (machine_id?: string) => {
     queryKey: ['tts', machine_id],
     queryFn: () => fetchTTS(machine_id!),
     enabled: !!machine_id,
+  });
+};
+
+export const useUpdateChecklistItem = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: updateChecklistItem,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['checklist'] });
+    },
   });
 };

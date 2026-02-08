@@ -1,13 +1,15 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useMachineStore } from '../../store/machineStore';
 
 const EquipmentScanPage: React.FC = () => {
   const navigate = useNavigate();
+  const { order_idx, machine_order } = useMachineStore();
 
   // 시뮬레이션: 4초 후 점검 모드 활성화
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigate('/user/voice-recorder');
+      navigate(`/user/voice-recorder?machine_id=${machine_order[order_idx]}`);
     }, 4000);
 
     return () => {

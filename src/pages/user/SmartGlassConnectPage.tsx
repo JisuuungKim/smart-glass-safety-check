@@ -45,7 +45,7 @@ const SmartGlassConnectPage: React.FC = () => {
             <>
               {/* Loading Animation - Ripple Effect */}
               <div className="relative mb-16">
-                <style jsx>{`
+                <style>{`
                   @keyframes ripple {
                     0% {
                       transform: scale(0);
@@ -98,7 +98,7 @@ const SmartGlassConnectPage: React.FC = () => {
             <>
               {/* Check Animation */}
               <div className="relative mb-16">
-                <style jsx>{`
+                <style>{`
                   @keyframes checkScale {
                     0% {
                       transform: scale(0);
